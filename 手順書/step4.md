@@ -65,48 +65,23 @@ touch app/storage.py
 `app/db.py` を編集します：
 
 ```python
-# 
-# 【意味】SQLAlchemy のインポート: データベース操作に必要な機能を読み込む
-# 【因果】create_engine で DB 接続、sessionmaker でセッション管理、declarative_base でモデル定義
-# 【学び】SQLAlchemy は Python の ORM（Object-Relational Mapping）で、SQL を直接書かずに DB を操作できる
-#
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# 
-# 【意味】データベース接続URL: SQLite データベースファイルの場所を指定
-# 【因果】"sqlite:///./app.db" で現在のディレクトリに app.db というファイルを作成
-# 【学び】SQLite はファイルベースのデータベースで、サーバー不要で動作する（開発に最適）
-# 【学び】本番環境では PostgreSQL や MySQL などのサーバー型 DB を使うことが多い
-#
+# データベース接続URL（SQLite）
 SQLALCHEMY_DATABASE_URL = "sqlite:///./app.db"
 
-# 
-# 【意味】エンジンの作成: データベースへの接続を管理するオブジェクト
-# 【因果】create_engine で接続プールを作成し、複数のリクエストで効率的に接続を再利用
-# 【学び】connect_args={"check_same_thread": False} は SQLite 専用の設定
-#   - SQLite はデフォルトでマルチスレッドを許可しないが、FastAPI は非同期で動作するため必要
-#
+# データベースエンジンの作成（SQLite用の設定を含む）
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, 
-    connect_args={"check_same_thread": False}  # SQLite用の設定
+    connect_args={"check_same_thread": False}
 )
 
-# 
-# 【意味】セッションファクトリーの作成: データベースセッションを生成する関数を作成
-# 【因果】SessionLocal を呼び出すと、新しい DB セッションが作成される
-# 【学び】autocommit=False: 自動コミットを無効化（明示的に commit() を呼ぶ必要がある）
-# 【学び】autoflush=False: 自動フラッシュを無効化（クエリ実行時に自動保存しない）
-# 【学び】bind=engine: どのエンジンを使うかを指定
-#
+# セッションファクトリーの作成（各リクエストでDBセッションを生成）
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# 
-# 【意味】Base クラス: すべてのデータベースモデルの基底クラス
-# 【因果】declarative_base() で作成した Base を継承することで、テーブル定義が簡単になる
-# 【学び】models.py で Post(Base) のように継承して使う
-#
+# データベースモデルの基底クラス
 Base = declarative_base()
 ```
 
@@ -116,54 +91,18 @@ Base = declarative_base()
 `app/models.py` を編集します：
 
 ```python
-# 
-# 【意味】必要なクラスと関数のインポート
-# 【因果】Column でカラム定義、Integer/String/DateTime でデータ型、func で SQL 関数を使用
-#
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 from app.db import Base
 
-# 
-# 【意味】Post モデル: 投稿データを表すデータベーステーブルの定義
-# 【因果】Base を継承することで、SQLAlchemy が自動的にテーブルを作成・管理してくれる
-# 【学び】ORM を使うことで、Python のクラスとしてデータベースを操作できる
-#
+# 投稿データを表すデータベースモデル
 class Post(Base):
-    # 
-    # 【意味】テーブル名の指定: データベースに作成されるテーブル名
-    # 【因果】__tablename__ がない場合、クラス名（Post）が小文字になってテーブル名になる
-    #
     __tablename__ = "posts"
 
-    # 
-    # 【意味】id カラム: 投稿の一意の識別子（主キー）
-    # 【因果】primary_key=True で主キーに設定、index=True でインデックスを作成（検索が高速化）
-    # 【学び】Integer 型で整数を保存
-    #
-    id = Column(Integer, primary_key=True, index=True)
-    
-    # 
-    # 【意味】image_url カラム: 画像の URL を保存
-    # 【因果】nullable=False で NULL 値を許可しない（必須項目）
-    # 【学び】String 型で文字列を保存（長さ制限なし）
-    #
-    image_url = Column(String, nullable=False)
-    
-    # 
-    # 【意味】caption カラム: 投稿のキャプション（説明文）を保存
-    # 【因果】nullable=True で NULL 値を許可（オプション項目）
-    # 【学び】キャプションは空でも投稿できるようにする
-    #
-    caption = Column(String, nullable=True)
-    
-    # 
-    # 【意味】created_at カラム: 投稿の作成日時を保存
-    # 【因果】DateTime(timezone=True) でタイムゾーン情報を含む日時型
-    # 【学び】server_default=func.now() で、データベース側で自動的に現在時刻を設定
-    # 【学び】Python 側で値を指定しなくても、DB が自動的に現在時刻を入れてくれる
-    #
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    id = Column(Integer, primary_key=True, index=True)  # 投稿ID（主キー）
+    image_url = Column(String, nullable=False)  # 画像URL（必須）
+    caption = Column(String, nullable=True)  # キャプション（オプション）
+    created_at = Column(DateTime(timezone=True), server_default=func.now())  # 作成日時（自動設定）
 ```
 
 ### 4-7) スキーマ定義（app/schemas.py）
@@ -172,48 +111,25 @@ class Post(Base):
 `app/schemas.py` を編集します：
 
 ```python
-# 
-# 【意味】Pydantic のインポート: データバリデーションとシリアライゼーション用のライブラリ
-# 【因果】FastAPI は Pydantic を使って、リクエスト/レスポンスの型チェックとバリデーションを行う
-# 【学び】BaseModel を継承したクラスは、自動的に JSON との変換が可能になる
-#
 from pydantic import BaseModel
 from datetime import datetime
 
-# 
-# 【意味】PostBase: 投稿データの基本スキーマ（共通フィールドを定義）
-# 【因果】継承を使って、重複を避けながら複数のスキーマを定義できる
-# 【学び】image_url は必須（str 型）、caption はオプション（str | None = None）
-# 【学び】str | None は Python 3.10+ の記法で、str または None を意味する
-#
+# 投稿データの基本スキーマ（共通フィールド）
 class PostBase(BaseModel):
-    image_url: str  # 【意味】画像URL（必須項目）
-    caption: str | None = None  # 【意味】キャプション（オプション、デフォルトは None）
+    image_url: str  # 画像URL（必須）
+    caption: str | None = None  # キャプション（オプション）
 
-# 
-# 【意味】PostCreate: 新規投稿作成時のリクエストスキーマ
-# 【因果】PostBase を継承し、id や created_at は含まない（これらは自動生成されるため）
-# 【学び】API の POST /posts エンドポイントで使用される
-#
+# 新規投稿作成時のリクエストスキーマ
 class PostCreate(PostBase):
-    pass  # 【意味】PostBase のフィールドをそのまま使用（追加フィールドなし）
+    pass
 
-# 
-# 【意味】Post: 投稿データのレスポンススキーマ（全フィールドを含む）
-# 【因果】PostBase に加えて、id と created_at を含む（データベースから取得した完全なデータ）
-# 【学び】API の GET /posts エンドポイントのレスポンスで使用される
-#
+# 投稿データのレスポンススキーマ（全フィールドを含む）
 class Post(PostBase):
-    id: int  # 【意味】投稿ID（データベースで自動生成）
-    created_at: datetime  # 【意味】作成日時（データベースで自動設定）
+    id: int  # 投稿ID
+    created_at: datetime  # 作成日時
 
-    # 
-    # 【意味】Config クラス: Pydantic の設定を定義
-    # 【因果】from_attributes = True で、SQLAlchemy モデルから自動的に Pydantic モデルに変換可能
-    # 【学び】これにより、db.query(Post).all() で取得したデータを、そのまま Post スキーマとして返せる
-    #
     class Config:
-        from_attributes = True  # 旧名: orm_mode = True（Pydantic v2 では from_attributes）
+        from_attributes = True  # SQLAlchemyモデルから自動変換
 ```
 
 ### 4-8) メインアプリケーション（app/main.py）
@@ -222,11 +138,6 @@ class Post(PostBase):
 `app/main.py` を編集します：
 
 ```python
-# 
-# 【意味】FastAPI と関連ライブラリのインポート
-# 【因果】FastAPI で API を作成、Depends で依存性注入、CORSMiddleware で CORS 設定
-# 【学び】HTTPException でエラーレスポンス、Session で DB セッション、List で型ヒント
-#
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -234,192 +145,64 @@ from typing import List
 import os
 from dotenv import load_dotenv
 
-# アプリケーション内のモジュールをインポート
 from app import models, schemas
 from app.db import SessionLocal, engine
 
-# 
-# 【意味】環境変数の読み込み: .env ファイルから環境変数を読み込む
-# 【因果】load_dotenv() で .env ファイルの内容を os.getenv() で取得できるようになる
-# 【学び】機密情報（API キーなど）をコードに直接書かず、環境変数で管理できる
-#
+# 環境変数の読み込み
 load_dotenv()
 
-# 
-# 【意味】データベーステーブルの自動作成: モデル定義に基づいてテーブルを作成
-# 【因果】create_all() で models.py で定義したすべてのテーブルが作成される
-# 【学び】本番環境では Alembic などのマイグレーションツールを使うことが推奨される
-# 【学び】bind=engine でどのデータベースエンジンを使うかを指定
-#
+# データベーステーブルの自動作成
 models.Base.metadata.create_all(bind=engine)
 
-# 
-# 【意味】FastAPI アプリケーションのインスタンス作成
-# 【因果】app が API のエントリーポイントになり、エンドポイントを追加していく
-# 【学び】FastAPI は自動的に OpenAPI ドキュメント（Swagger UI）を生成してくれる
-#
+# FastAPIアプリケーションのインスタンス作成
 app = FastAPI()
 
-# 
-# 【意味】CORS（Cross-Origin Resource Sharing）設定: ブラウザのセキュリティ制限を緩和
-# 【因果】フロントエンド（localhost:3000）から API（localhost:8000）にアクセスするために必要
-# 【学び】異なるオリジン（プロトコル・ドメイン・ポート）間での通信を許可する
-# 【学び】allowed_origins で許可するオリジンを指定（複数指定可能、カンマ区切り）
-#
+# CORS設定（フロントエンドからのアクセスを許可）
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,  # 【意味】許可するオリジンのリスト
-    allow_credentials=True,  # 【意味】クッキーなどの認証情報を許可
-    allow_methods=["*"],  # 【意味】すべての HTTP メソッド（GET, POST など）を許可
-    allow_headers=["*"],  # 【意味】すべての HTTP ヘッダーを許可
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# 
-# 【意味】データベースセッションの依存関係: 各エンドポイントで DB セッションを取得する関数
-# 【因果】Depends(get_db) を使うことで、FastAPI が自動的にセッションを管理してくれる
-# 【学び】yield を使うことで、関数の実行後（finally ブロック）に確実にセッションを閉じられる
-# 【学び】これにより、メモリリークや接続の枯渇を防ぐ
-#
+# データベースセッションの依存関係（各エンドポイントでDBセッションを取得）
 def get_db():
-    db = SessionLocal()  # 【意味】新しい DB セッションを作成
+    db = SessionLocal()
     try:
-        yield db  # 【意味】セッションを呼び出し元に渡す（エンドポイントの実行中は有効）
+        yield db
     finally:
-        db.close()  # 【意味】エンドポイントの処理が終わったら、必ずセッションを閉じる
+        db.close()
 
-# 
-# 【意味】ヘルスチェックエンドポイント: API が正常に動作しているか確認する
-# 【因果】デプロイ時や監視システムで、API の稼働状況を確認するために使用
-# 【学び】GET /health にアクセスして {"status": "ok"} が返れば、API は正常に動作している
-#
+# ヘルスチェックエンドポイント
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
 
-# 
-# 【意味】投稿一覧取得エンドポイント: すべての投稿を取得する
-# 【因果】GET /posts にアクセスすると、データベースから投稿一覧を取得して返す
-# 【学び】response_model=List[schemas.Post] でレスポンスの型を指定（自動ドキュメント生成に使用）
-# 【学び】skip と limit でページネーション（大量データを分割して取得）に対応
-#
-# 【データの流れ（GET /posts リクエスト時）】:
-#   1. フロントエンド: fetch('http://localhost:8000/posts') を送信
-#   2. FastAPI: GET /posts エンドポイントが呼ばれる
-#   3. get_db(): DB セッションを作成 → db 変数に渡される
-#   4. db.query(models.Post): SQLAlchemy が SQL クエリを生成
-#      → SELECT * FROM posts ORDER BY created_at DESC LIMIT 100 OFFSET 0
-#   5. データベース: SQL を実行 → 投稿データを返す
-#   6. .all(): SQLAlchemy が結果を Post モデルオブジェクトのリストに変換
-#      → [Post(id=1, image_url="...", ...), Post(id=2, ...), ...]
-#   7. return posts: FastAPI が Pydantic スキーマ（schemas.Post）に変換
-#      → [{"id": 1, "image_url": "...", ...}, {"id": 2, ...}, ...]
-#   8. FastAPI: JSON 形式にシリアライズ → HTTP レスポンスとして返す
-#   9. フロントエンド: JSON を受信 → JavaScript オブジェクトに変換 → 画面に表示
-#
+# 投稿一覧取得エンドポイント
 @app.get("/posts", response_model=List[schemas.Post])
 def get_posts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    # 
-    # 【データの流れ】db (Session オブジェクト)
-    #   ↓ .query(models.Post) → SQLAlchemy クエリビルダー
-    #   ↓ .order_by(...) → ORDER BY created_at DESC を追加
-    #   ↓ .offset(skip) → OFFSET 0 を追加（スキップする件数）
-    #   ↓ .limit(limit) → LIMIT 100 を追加（取得する最大件数）
-    #   ↓ .all() → SQL を実行して結果を取得
-    #   ↓ posts = [Post オブジェクト, Post オブジェクト, ...]
-    # 【意味】データベースクエリ: 投稿を取得して、作成日時の降順（新しい順）でソート
-    # 【因果】order_by(models.Post.created_at.desc()) で新しい投稿から順に並べる
-    # 【学び】offset(skip) でスキップする件数、limit(limit) で取得する最大件数を指定
-    # 【学び】.all() でクエリを実行し、結果をリストとして取得
-    #
+    # データベースから投稿を取得（作成日時の降順でソート）
     posts = db.query(models.Post).order_by(models.Post.created_at.desc()).offset(skip).limit(limit).all()
-    
-    # 【データの流れ】posts = [Post オブジェクト, ...]
-    #   ↓ FastAPI が response_model=List[schemas.Post] に基づいて変換
-    #   ↓ [{"id": 1, "image_url": "...", ...}, ...] (Pydantic モデル)
-    #   ↓ JSON にシリアライズ
-    #   ↓ HTTP レスポンスボディ: [{"id": 1, "image_url": "...", ...}, ...]
-    #   ↓ フロントエンドに送信
-    return posts  # 【意味】取得した投稿リストを JSON 形式で返す（FastAPI が自動変換）
+    return posts
 
-# 
-# 【意味】投稿作成エンドポイント: 新しい投稿を作成する
-# 【因果】POST /posts にリクエストを送ると、データベースに新しい投稿が保存される
-# 【注意】現在は画像アップロード機能は未実装（Step 5 で実装）
-#
-# 【データの流れ（POST /posts リクエスト時）】:
-#   1. フロントエンド: FormData { file: File, caption: "..." } を送信
-#   2. FastAPI: POST /posts エンドポイントが呼ばれる
-#   3. FastAPI: リクエストボディを Pydantic スキーマ（schemas.PostCreate）に変換
-#      → post = PostCreate(image_url="...", caption="...")
-#   4. get_db(): DB セッションを作成 → db 変数に渡される
-#   5. post.dict(): Pydantic モデルを辞書に変換 → {"image_url": "...", "caption": "..."}
-#   6. models.Post(**post.dict()): 辞書を展開して Post モデルオブジェクトを作成
-#      → db_post = Post(image_url="...", caption="...", id=None, created_at=None)
-#   7. db.add(db_post): セッションに追加（まだ DB には保存されていない）
-#   8. db.commit(): SQL を実行して DB に保存
-#      → INSERT INTO posts (image_url, caption, created_at) VALUES (..., ..., NOW())
-#      → DB が自動的に id と created_at を生成
-#   9. db.refresh(db_post): DB から最新データを取得
-#      → db_post.id = 1, db_post.created_at = "2024-01-01T12:00:00"
-#   10. return db_post: FastAPI が Pydantic スキーマ（schemas.Post）に変換
-#       → {"id": 1, "image_url": "...", "caption": "...", "created_at": "..."}
-#   11. FastAPI: JSON 形式にシリアライズ → HTTP レスポンスとして返す
-#   12. フロントエンド: JSON を受信 → 成功を通知 → タイムラインに遷移
-#
+# 投稿作成エンドポイント（画像アップロード機能はStep 5で実装）
 @app.post("/posts", response_model=schemas.Post)
 def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
-    # 
-    # 【データの流れ】post = PostCreate(image_url="...", caption="...")
-    #   ↓ .dict() → {"image_url": "...", "caption": "..."}
-    #   ↓ ** で展開 → image_url="...", caption="..."
-    #   ↓ models.Post(image_url="...", caption="...")
-    #   ↓ db_post = Post(id=None, image_url="...", caption="...", created_at=None)
-    # 【意味】Pydantic モデルから SQLAlchemy モデルに変換
-    # 【因果】post.dict() で辞書に変換し、** で展開して Post モデルのコンストラクタに渡す
-    # 【学び】**post.dict() は image_url と caption をキーワード引数として展開する
-    #
+    # PydanticモデルからSQLAlchemyモデルに変換
     db_post = models.Post(**post.dict())
     
-    # 
-    # 【データの流れ】db_post (Post オブジェクト)
-    #   ↓ db.add(db_post) → セッションの「追加予定リスト」に追加
-    #   ↓ この時点ではまだ DB には保存されていない（メモリ上のみ）
-    # 【意味】セッションに追加: 新しい投稿オブジェクトをセッションに追加（まだ DB には保存されない）
-    # 【因果】db.add() でセッションに追加し、db.commit() で実際に DB に保存
-    #
+    # セッションに追加
     db.add(db_post)
     
-    # 
-    # 【データの流れ】セッションの「追加予定リスト」
-    #   ↓ db.commit() → SQL を生成して実行
-    #   ↓ INSERT INTO posts (image_url, caption, created_at) VALUES (..., ..., NOW())
-    #   ↓ データベースが実行 → データが永続化される
-    #   ↓ データベースが自動的に id と created_at を生成
-    # 【意味】データベースにコミット: 変更をデータベースに永続化
-    # 【因果】commit() でトランザクションを確定し、データが実際に保存される
-    # 【学び】エラーが発生した場合は自動的にロールバックされる
-    #
+    # データベースにコミット
     db.commit()
     
-    # 
-    # 【データの流れ】db_post (id=None, created_at=None のまま)
-    #   ↓ db.refresh(db_post) → SELECT * FROM posts WHERE id = ? を実行
-    #   ↓ データベースから最新データを取得
-    #   ↓ db_post.id = 1, db_post.created_at = "2024-01-01T12:00:00"
-    # 【意味】オブジェクトをリフレッシュ: データベースから最新のデータを取得
-    # 【因果】commit() 後、id や created_at などの自動生成された値が db_post に反映される
-    # 【学び】refresh() しないと、id や created_at が None のままになる
-    #
+    # オブジェクトをリフレッシュ（自動生成されたidやcreated_atを取得）
     db.refresh(db_post)
     
-    # 【データの流れ】db_post = Post(id=1, image_url="...", caption="...", created_at="...")
-    #   ↓ FastAPI が response_model=schemas.Post に基づいて変換
-    #   ↓ {"id": 1, "image_url": "...", "caption": "...", "created_at": "..."}
-    #   ↓ JSON にシリアライズ
-    #   ↓ HTTP レスポンスボディ: {"id": 1, "image_url": "...", ...}
-    #   ↓ フロントエンドに送信
-    return db_post  # 【意味】作成された投稿データを JSON 形式で返す
+    return db_post
 ```
 
 ### 4-9) 環境変数ファイル（.env）
