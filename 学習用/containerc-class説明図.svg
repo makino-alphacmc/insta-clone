@@ -1,0 +1,113 @@
+<svg width="1920" height="1200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景（ブラウザの画面全体） -->
+  <rect width="1920" height="1200" fill="#f0f0f0"/>
+  
+  <!-- タイトル -->
+  <text x="960" y="40" font-family="Inter, sans-serif" font-size="28" font-weight="700" fill="#0a0a0a" text-anchor="middle">containerクラスの動作説明</text>
+  
+  <!-- ========== パターン1: containerなし ========== -->
+  <g transform="translate(0, 80)">
+    <text x="960" y="30" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#0a0a0a" text-anchor="middle">❌ containerなし（幅が画面いっぱい）</text>
+    
+    <!-- ブラウザの画面幅 -->
+    <rect x="60" y="60" width="1800" height="200" fill="#ffffff" stroke="#333333" stroke-width="2" stroke-dasharray="4 4"/>
+    <text x="70" y="85" font-family="Inter, sans-serif" font-size="14" fill="#666666">ブラウザの画面幅（1920px）</text>
+    
+    <!-- コンテンツ（画面いっぱい） -->
+    <rect x="60" y="100" width="1800" height="140" fill="#ef4444" opacity="0.3"/>
+    <text x="960" y="180" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#991b1b" text-anchor="middle">コンテンツが画面いっぱいに広がる</text>
+    <text x="960" y="210" font-family="Inter, sans-serif" font-size="14" fill="#991b1b" text-anchor="middle">（読みにくい、PCで見ると広すぎる）</text>
+  </g>
+  
+  <!-- ========== パターン2: containerのみ ========== -->
+  <g transform="translate(0, 360)">
+    <text x="960" y="30" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#0a0a0a" text-anchor="middle">✅ containerのみ（自動で最大幅を設定）</text>
+    
+    <!-- ブラウザの画面幅 -->
+    <rect x="60" y="60" width="1800" height="200" fill="#ffffff" stroke="#333333" stroke-width="2" stroke-dasharray="4 4"/>
+    <text x="70" y="85" font-family="Inter, sans-serif" font-size="14" fill="#666666">ブラウザの画面幅（1920px）</text>
+    
+    <!-- containerの最大幅（中央） -->
+    <rect x="360" y="100" width="1200" height="140" fill="#3b82f6" opacity="0.2" stroke="#3b82f6" stroke-width="2" stroke-dasharray="8 4"/>
+    <text x="960" y="130" font-family="Inter, sans-serif" font-size="14" fill="#1e40af" text-anchor="middle">containerの最大幅（画面サイズに応じて変わる）</text>
+    
+    <!-- コンテンツ（container内） -->
+    <rect x="360" y="100" width="1200" height="140" fill="#22c55e" opacity="0.4"/>
+    <text x="960" y="180" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#15803d" text-anchor="middle">コンテンツ（中央揃え、読みやすい幅）</text>
+    <text x="960" y="210" font-family="Inter, sans-serif" font-size="14" fill="#15803d" text-anchor="middle">左右に余白が自動で追加される</text>
+    
+    <!-- 左右の余白 -->
+    <rect x="60" y="100" width="300" height="140" fill="#fbbf24" opacity="0.2"/>
+    <text x="210" y="180" font-family="Inter, sans-serif" font-size="12" fill="#92400e" text-anchor="middle">余白</text>
+    <rect x="1560" y="100" width="300" height="140" fill="#fbbf24" opacity="0.2"/>
+    <text x="1710" y="180" font-family="Inter, sans-serif" font-size="12" fill="#92400e" text-anchor="middle">余白</text>
+  </g>
+  
+  <!-- ========== パターン3: container + mx-auto + max-w-7xl ========== -->
+  <g transform="translate(0, 640)">
+    <text x="960" y="30" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#0a0a0a" text-anchor="middle">✅ container + mx-auto + max-w-7xl（推奨パターン）</text>
+    
+    <!-- ブラウザの画面幅 -->
+    <rect x="60" y="60" width="1800" height="200" fill="#ffffff" stroke="#333333" stroke-width="2" stroke-dasharray="4 4"/>
+    <text x="70" y="85" font-family="Inter, sans-serif" font-size="14" fill="#666666">ブラウザの画面幅（1920px）</text>
+    
+    <!-- max-w-7xlの最大幅（1280px、中央） -->
+    <rect x="380" y="100" width="1160" height="140" fill="#8b5cf6" opacity="0.2" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="8 4"/>
+    <text x="960" y="130" font-family="Inter, sans-serif" font-size="14" fill="#6d28d9" text-anchor="middle">max-w-7xl = 最大1280px（固定）</text>
+    
+    <!-- コンテンツ（container内、px-4で左右にパディング） -->
+    <rect x="396" y="100" width="1128" height="140" fill="#22c55e" opacity="0.4"/>
+    <text x="960" y="180" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#15803d" text-anchor="middle">コンテンツ（px-4 = 左右16pxのパディング）</text>
+    <text x="960" y="210" font-family="Inter, sans-serif" font-size="14" fill="#15803d" text-anchor="middle">mx-autoで中央揃え、max-w-7xlで最大幅を制限</text>
+    
+    <!-- 左右の余白 -->
+    <rect x="60" y="100" width="320" height="140" fill="#fbbf24" opacity="0.2"/>
+    <text x="220" y="180" font-family="Inter, sans-serif" font-size="12" fill="#92400e" text-anchor="middle">余白</text>
+    <rect x="1540" y="100" width="320" height="140" fill="#fbbf24" opacity="0.2"/>
+    <text x="1700" y="180" font-family="Inter, sans-serif" font-size="12" fill="#92400e" text-anchor="middle">余白</text>
+    
+    <!-- px-4のパディング -->
+    <rect x="380" y="100" width="16" height="140" fill="#f59e0b" opacity="0.5"/>
+    <text x="388" y="180" font-family="Inter, sans-serif" font-size="10" fill="#92400e" text-anchor="middle">px-4</text>
+    <rect x="1524" y="100" width="16" height="140" fill="#f59e0b" opacity="0.5"/>
+    <text x="1532" y="180" font-family="Inter, sans-serif" font-size="10" fill="#92400e" text-anchor="middle">px-4</text>
+  </g>
+  
+  <!-- ========== 詳細説明 ========== -->
+  <g transform="translate(0, 920)">
+    <rect x="60" y="0" width="1800" height="240" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" rx="8"/>
+    
+    <text x="80" y="30" font-family="Inter, sans-serif" font-size="18" font-weight="600" fill="#0a0a0a">各クラスの役割</text>
+    
+    <!-- container -->
+    <rect x="80" y="50" width="400" height="80" fill="#dbeafe" rx="4"/>
+    <text x="100" y="75" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#1e40af">container</text>
+    <text x="100" y="95" font-family="Inter, sans-serif" font-size="12" fill="#1e3a8a">コンテンツの最大幅を設定</text>
+    <text x="100" y="115" font-family="Inter, sans-serif" font-size="12" fill="#1e3a8a">（画面サイズに応じて自動調整）</text>
+    
+    <!-- mx-auto -->
+    <rect x="500" y="50" width="400" height="80" fill="#dcfce7" rx="4"/>
+    <text x="520" y="75" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#15803d">mx-auto</text>
+    <text x="520" y="95" font-family="Inter, sans-serif" font-size="12" fill="#166534">左右のマージンを自動で設定</text>
+    <text x="520" y="115" font-family="Inter, sans-serif" font-size="12" fill="#166534">（中央揃えになる）</text>
+    
+    <!-- max-w-7xl -->
+    <rect x="920" y="50" width="400" height="80" fill="#f3e8ff" rx="4"/>
+    <text x="940" y="75" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#6d28d9">max-w-7xl</text>
+    <text x="940" y="95" font-family="Inter, sans-serif" font-size="12" fill="#581c87">最大幅を1280pxに制限</text>
+    <text x="940" y="115" font-family="Inter, sans-serif" font-size="12" fill="#581c87">（大きすぎる画面でも読みやすい）</text>
+    
+    <!-- px-4 -->
+    <rect x="1340" y="50" width="400" height="80" fill="#fef3c7" rx="4"/>
+    <text x="1360" y="75" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#92400e">px-4</text>
+    <text x="1360" y="95" font-family="Inter, sans-serif" font-size="12" fill="#78350f">左右に16pxのパディング</text>
+    <text x="1360" y="115" font-family="Inter, sans-serif" font-size="12" fill="#78350f">（コンテンツと端の余白）</text>
+    
+    <!-- 実際のコード例 -->
+    <text x="80" y="160" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#0a0a0a">実際のコード:</text>
+    <rect x="80" y="170" width="1640" height="50" fill="#f5f5f5" rx="4"/>
+    <text x="100" y="195" font-family="monospace" font-size="14" fill="#0a0a0a">&lt;main class="container mx-auto max-w-7xl px-4 py-8"&gt;</text>
+    <text x="100" y="215" font-family="Inter, sans-serif" font-size="12" fill="#666666">→ コンテンツが中央に配置され、最大1280px、左右に16pxのパディングが追加される</text>
+  </g>
+</svg>
+
