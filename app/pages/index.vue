@@ -6,7 +6,7 @@
 				<div class="flex justify-between items-center">
 					<h1 class="text-2xl font-bold">Jeligramy</h1>
 					<Button as-child>
-						<NuxtLink to="/post/new">新規投稿</NuxtLink>
+						<NuxtLink to="/post/new">+ 新規投稿</NuxtLink>
 					</Button>
 				</div>
 			</div>
