@@ -125,7 +125,7 @@ npm run dev
 
 ################################################################################
 
-# 2-1) タイムライン画面（pages/index.vue）
+# 2-1) タイムライン画面（app/pages/index.vue）
 
 # [ ] const posts = [...] を用意（image_url, caption, created_at）
 
@@ -135,7 +135,7 @@ npm run dev
 
 #
 
-# 2-2) 投稿画面（pages/post/new.vue）
+# 2-2) 投稿画面（app/pages/post/new.vue）
 
 # [ ] file input + caption textarea + Button
 
@@ -285,7 +285,7 @@ pip install supabase
 
 ################################################################################
 
-# 6-1) TL（pages/index.vue）
+# 6-1) TL（app/pages/index.vue）
 
 # [ ] const posts = [...] を削除（または fallback 用に残す）
 
@@ -293,7 +293,7 @@ pip install supabase
 
 # [ ] pending → Skeleton / error → Alert で表示
 
-# 6-2) 投稿（pages/post/new.vue）
+# 6-2) 投稿（app/pages/post/new.vue）
 
 # [ ] FormData で file + caption を POST /posts
 

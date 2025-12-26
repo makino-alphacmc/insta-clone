@@ -1,8 +1,24 @@
-# jeligramy ディレクトリを除外（独立したGitリポジトリとして管理）
-jeligramy/
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
 
-# その他の一般的な除外ファイル
-.DS_Store
-node_modules/
+# Node dependencies
+node_modules
+
+# Logs
+logs
 *.log
 
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example

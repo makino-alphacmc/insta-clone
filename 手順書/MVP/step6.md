@@ -10,11 +10,11 @@
 
 ## ✅ 手順
 
-### 6-1) タイムライン画面の更新（pages/index.vue）
+### 6-1) タイムライン画面の更新（app/pages/index.vue）
 
 モックデータをAPI取得に置き換え、3列レイアウトと各状態を実装します。
 
-`pages/index.vue` を編集します：
+`app/pages/index.vue` を編集します：
 
 ```vue
 <template>
@@ -228,11 +228,11 @@ onMounted(() => {
 </script>
 ```
 
-### 6-2) 新規投稿画面の更新（pages/post/new.vue）
+### 6-2) 新規投稿画面の更新（app/pages/post/new.vue）
 
 実際のAPIに投稿を送信し、成功/失敗の状態を実装します。
 
-`pages/post/new.vue` を編集します：
+`app/pages/post/new.vue` を編集します：
 
 ```vue
 <template>

@@ -10,11 +10,11 @@ API がまだない状態でも、UI を確認できるようにモック画面�
 
 ## ✅ 手順
 
-### 3-1) タイムライン画面（pages/index.vue）
+### 3-1) タイムライン画面（app/pages/index.vue）
 
 モックデータを画面に流し込み、3 列レイアウトで一覧 UI を実装します。
 
-`pages/index.vue` を編集します：
+`app/pages/index.vue` を編集します：
 
 ```vue
 <template>
@@ -262,11 +262,11 @@ const formatDate = (dateString) => {
 </script>
 ```
 
-### 3-2) 新規投稿画面（pages/post/new.vue）
+### 3-2) 新規投稿画面（app/pages/post/new.vue）
 
 フォーム入力とプレビューの流れを実装します。
 
-`pages/post/new.vue` を作成します：
+`app/pages/post/new.vue` を作成します：
 
 ```vue
 <template>
@@ -479,11 +479,11 @@ const handleSubmit = () => {
 
 ## ✅ チェックリスト
 
-- [✅ ] タイムライン画面（`pages/index.vue`）が作成された
+- [✅ ] タイムライン画面（`app/pages/index.vue`）が作成された
 - [✅ ] 3 列グリッドレイアウトで投稿が表示される
 - [✅ ] モックデータが表示される
 - [✅ ] 空状態が表示される
-- [✅ ] 新規投稿画面（`pages/post/new.vue`）が作成された
+- [✅ ] 新規投稿画面（`app/pages/post/new.vue`）が作成された
 - [✅ ] 画像選択とプレビューが動作する
 - [✅ ] 「新規投稿」ボタンから投稿画面に遷移できる
 - [✅ ] 投稿画面からトップページに戻れる

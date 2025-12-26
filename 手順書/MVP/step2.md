@@ -67,12 +67,12 @@ npx tailwindcss init -p
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	content: [
-		'./components/**/*.{js,vue,ts}',
-		'./layouts/**/*.vue',
-		'./pages/**/*.vue',
-		'./plugins/**/*.{js,ts}',
-		'./app.vue',
-		'./error.vue',
+		'./app/components/**/*.{js,vue,ts}',
+		'./app/layouts/**/*.vue',
+		'./app/pages/**/*.vue',
+		'./app/plugins/**/*.{js,ts}',
+		'./app/app.vue',
+		'./app/error.vue',
 	],
 	theme: {
 		extend: {},
@@ -159,8 +159,8 @@ npx shadcn-vue@latest add \
 簡単なテストページを作成して、動作を確認します：
 
 ```bash
-# pages/index.vue を編集
-code pages/index.vue  # または任意のエディタ
+# app/pages/index.vue を編集
+code app/pages/index.vue  # または任意のエディタ
 ```
 
 以下の内容を追加：
